@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Цаг агаарын мэдээлэл</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-blue-50 text-gray-900 font-sans p-6">
+    <h1 class="text-4xl font-semibold text-blue-600 mb-6 text-center">Цаг агаарын мэдээлэл</h1>
+
+    <div class="flex justify-center">
+        <input id="cityInput" class="input p-3 text-lg rounded-md border border-gray-300 w-80 mb-4" type="text"
+            placeholder="Хот оруулна уу...">
+        <button class="ml-2 px-3 py-6 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-all"
+            onclick="getWeather()">Хайх</button>
+    </div>
+
+    <div id="hewleh" class="mt-6"></div>
+
+    <script>
+        const apiKey = "e1b5dc95f6bafbbb30df708fc0ba17b7";
+
+        // Function to get weather info dynamically based on city input
+        function getWeather() {
+            const city = document.getElementById('cityInput').value.trim();
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            fetch(url)
+                .then((result) => result.json())
+                .then((data) => {
+                    let hewleh = document.getElementById("hewleh");
+                    hewleh.innerHTML = ''; // Clear previous data
+                    if (data.cod === 200) {
+                        let div = document.createElement("div");
+                        div.innerHTML = `
+                            <div class="bg-white shadow-lg rounded-lg p-6 max-w-lg mx-auto">
+                                <table class="w-full text-left">
+                                    <tr>
+                                        <td class="py-2 font-medium">Хотын Нэр:</td>
+                                        <td class="py-2"><h1 class="text-3xl font-bold">${data.name} <img class="inline-block" src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" alt="Weather icon"></h1></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Дундаж температур:</td>
+                                        <td class="py-2"><h2 class="text-2xl font-semibold">${data.main.temp}°C</h2></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Өдөр:</td>
+                                        <td class="py-2"><h2 class="text-xl">${data.main.temp_max}°C</h2></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Орой:</td>
+                                        <td class="py-2"><h2 class="text-xl">${data.main.temp_min}°C</h2></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Салхины хурд:</td>
+                                        <td class="py-2"><h3 class="text-lg">${data.wind.speed} м/с</h3></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-medium">Чийгшил:</td>
+                                        <td class="py-2"><h3 class="text-lg">${data.main.humidity}%</h3></td>
+                                    </tr>
+                                </table>
+                            </div>`;
+                        hewleh.appendChild(div);
+                    } else {
+                        hewleh.innerHTML = `<p class="text-red-500 text-xl">Хотоо зөв оруулна уу!</p>`;
+                    }
+                    // Call function to display predefined cities after search
+                    displayPredefinedCities();
+                })
+                .catch(error => {
+                    console.error("Error fetching the weather data:", error);
+                    alert('Цаг агаарын мэдээллийг авахад алдаа гарлаа.');
+                });
+        }
+
+        // Function to display predefined cities with weather cards
+        function displayPredefinedCities() {
+            const predefinedCities = [
+                { name: 'Ulaanbaatar', icon: '10d', tempMax: 12, tempMin: 8, windSpeed: 0, humidity: 32 },
+                { name: 'Selenge', icon: '10d', tempMax: 10, tempMin: 5, windSpeed: 3, humidity: 40 },
+                { name: 'London', icon: '10d', tempMax: 15, tempMin: 8, windSpeed: 2, humidity: 50 },
+                { name: 'Paris', icon: '10d', tempMax: 18, tempMin: 12, windSpeed: 1, humidity: 55 },
+                { name: 'Tokyo', icon: '10d', tempMax: 22, tempMin: 16, windSpeed: 4, humidity: 60 }
+            ];
+
+            let hewleh = document.getElementById("hewleh");
+            
+            // Predefined cities' information will always show, plus any dynamic search result.
+            predefinedCities.forEach(city => {
+                let div = document.createElement("div");
+                div.innerHTML = `
+                    <div class="bg-white px-8 py-4 rounded-lg mr-4 mt-4 text-center">
+                        <h1 class="text-xl font-bold text-black">${city.name}</h1>
+                        <img src="https://openweathermap.org/img/wn/${city.icon}@2x.png" />
+                        <div class="mt-4 text-gray-700">
+                            <p>Их Темп: ${city.tempMax}°C</p>
+                            <p>Бага Темп: ${city.tempMin}°C</p>
+                            <p>Салхины хурд: ${city.windSpeed} м/с</p>
+                            <p>Чийгшил: ${city.humidity}%</p>
+                        </div>
+                    </div>`;
+                hewleh.appendChild(div);
+            });
+        }
+
+        // Initial call to display predefined cities (Ulaanbaatar, Selenge, London, Paris, Tokyo)
+        displayPredefinedCities();
+    </script>
+</body>
+
+</html>
